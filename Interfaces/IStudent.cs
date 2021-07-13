@@ -24,5 +24,8 @@ namespace Bot.Interfaces
         
         // Унікальний порядковий номер команди цього студента
         public long TeamId { get; set; }
+        
+        // Унікальний id повідомлення, яке буде редагуватись в процесі діалогу з користувачем
+        public int MainMessageId { get; set; }
     }
 }

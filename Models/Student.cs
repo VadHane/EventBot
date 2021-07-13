@@ -5,7 +5,7 @@ namespace Bot.Models
 {
     public class Student : IStudent
     {
-        public Student(string name, User user)
+        public Student(string name, User user, int msgId)
         {
             this.Name = name;
             Telegram_name = user.FirstName + ' ' + user.LastName;
@@ -14,6 +14,7 @@ namespace Bot.Models
             Unique_id = GetUniqueId();
             CanJoinToTeam = true;
             TeamId = -1;
+            MainMessageId = msgId;
         }
         
         
@@ -24,6 +25,7 @@ namespace Bot.Models
         public long Unique_id { get; set; }
         public bool CanJoinToTeam { get; set; }
         public long TeamId { get; set; }
+        public int MainMessageId { get; set; }
         
         
         private static long CounterUniqueId;
