@@ -1,9 +1,9 @@
-using Bot.Models;
+using Bot.Interfaces;
 using Telegram.Bot.Types;
 
 namespace Bot.Models
 {
-    public class Student
+    public class Student : IStudent
     {
         public Student(string name, User user)
         {
@@ -13,7 +13,7 @@ namespace Bot.Models
             Telegram_username = user.Username;
             Unique_id = GetUniqueId();
             CanJoinToTeam = true;
-            Team = null;
+            TeamId = -1;
         }
         
         
@@ -23,7 +23,7 @@ namespace Bot.Models
         public long Telegram_id { get; set; }
         public long Unique_id { get; set; }
         public bool CanJoinToTeam { get; set; }
-        public Team Team { get; set; }
+        public long TeamId { get; set; }
         
         
         private static long CounterUniqueId;
