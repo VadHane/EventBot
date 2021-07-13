@@ -8,16 +8,16 @@ namespace Bot.Interfaces
         public string Name { get; set; }
         
         // Ім'я користувача із телеграм акаунта
-        public string Telegram_name { get; set; }
+        public string TelegramName { get; set; }
         
         // Унікальне ім'я користувача в телеграмі
-        public string Telegram_username { get; set; }
+        public string TelegramUsername { get; set; }
         
         // Унікальний ідентифікатор користувача в телеграмі
-        public long Telegram_id { get; set; }
+        public long TelegramId { get; set; }
         
         // Унікальний порядковий номер студента в базі даних
-        public long Unique_id { get; set; }
+        public long UniqueId { get; set; }
         
         // Змінна, що вказує, чи має право цей студент приєднуватись до команд
         public bool CanJoinToTeam { get; set; }

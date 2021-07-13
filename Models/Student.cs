@@ -8,10 +8,10 @@ namespace Bot.Models
         public Student(string name, User user, int msgId)
         {
             this.Name = name;
-            Telegram_name = user.FirstName + ' ' + user.LastName;
-            Telegram_id = user.Id;
-            Telegram_username = user.Username;
-            Unique_id = GetUniqueId();
+            TelegramName = user.FirstName + ' ' + user.LastName;
+            TelegramId = user.Id;
+            TelegramUsername = user.Username;
+            UniqueId = GetUniqueId();
             CanJoinToTeam = true;
             TeamId = -1;
             MainMessageId = msgId;
@@ -19,10 +19,10 @@ namespace Bot.Models
         
         
         public string Name { get; set; }
-        public string Telegram_name { get; set; }
-        public string Telegram_username { get; set; }
-        public long Telegram_id { get; set; }
-        public long Unique_id { get; set; }
+        public string TelegramName { get; set; }
+        public string TelegramUsername { get; set; }
+        public long TelegramId { get; set; }
+        public long UniqueId { get; set; }
         public bool CanJoinToTeam { get; set; }
         public long TeamId { get; set; }
         public int MainMessageId { get; set; }

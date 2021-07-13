@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using Bot.Interfaces;
 using Bot.Models;
 using Telegram.Bot.Args;
@@ -10,7 +9,7 @@ namespace Bot.Handlers
 {
     public class AddNew
     {
-        public static async Task Student(long ChatId)
+        public static async System.Threading.Tasks.Task Student(long ChatId)
         {
             int step = 1;
             var wait = new ManualResetEvent(false);
@@ -30,17 +29,17 @@ namespace Bot.Handlers
                     await Program.bot.EditMessageTextAsync(ChatId, student.MainMessageId, 
                         $"<b>Чудово!</b> Я радий познайомитись з тобою, <b><em>{student.Name}</em>!</b>" +
                         $"\nОчікуй запрошення в команду від <b>свого <em>капітана</em> команди</b>!" +
-                        $"\nТвій <b><em>унікальний порядковий номер</em></b> - <b>{student.Unique_id}</b>" +
+                        $"\nТвій <b><em>унікальний порядковий номер</em></b> - <b>{student.UniqueId}</b>" +
                         $"\n\nЯкщо тебе обрали капітаном команди - натисни на кнопку '<b><em>Я капітан</em></b>' " +
                         $"та очікуй на код доступа від організатора.", ParseMode.Html, replyMarkup: Keyboards.ImLeader());
                     
-                    Settings.Students.Add(student.Telegram_id);
+                    Settings.Students.Add(student.TelegramId);
                     
                     // DB
 
 
                     Console.WriteLine($"[New User] New user was added into data base. [Name - {student.Name}, " +
-                                      $"Telegram username - {student.Telegram_username}, Unique id - {student.Unique_id}]");
+                                      $"Telegram username - {student.TelegramUsername}, Unique id - {student.UniqueId}]");
                 }
             };
 
