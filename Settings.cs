@@ -3,14 +3,26 @@ using System.Collections.Generic;
 
 namespace Bot
 {
-    public class Settings
+    public abstract class Settings
     {
-        
+        /// <summary>
+        /// Режим розробки, в якому не відбувається запис інформації в БД
+        /// </summary>
         public static bool DEBUG = true;
+        
+        /// <summary>
+        /// Унікальний токен бота. Залежить від режиму розробки.
+        /// </summary>
         public static string TOKEN = DEBUG ? "1808452087:AAGRxFDe4r5mXsBemwy089p9NWmyz5TecSs" : "";
-
+        
+        /// <summary>
+        /// Унікальний код для капітанів команд для валідації користувачів, що мають на меті створення нової команди.
+        /// </summary>
         public static int PasswordForLeaders = new Random().Next(1000, 9999);
 
+        /// <summary>
+        /// Список телеграм-ідентифікаторів усіх студентів для зменшення запитів до БД.
+        /// </summary>
         public static List<long> Students = new List<long>();
         
         
@@ -25,6 +37,9 @@ namespace Bot
         private const string SSLMode = "Require";
         private const bool TrueServerCertificate = true;
 
+        /// <summary>
+        /// Стрічка підключення до БД
+        /// </summary>
         public static readonly string ConnectionString = $"host={Host};" +
                                                          $"username={Username};" +
                                                          $"password={Password};" +

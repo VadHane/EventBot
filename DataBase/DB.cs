@@ -7,9 +7,14 @@ using Telegram.Bot.Types;
 
 namespace Bot.DataBase
 {
-    public class DB
+    public abstract class DB
     {
 
+        /// <summary>
+        /// Витягує з БД інформацію про студента по його телеграм-ідентифікатору.
+        /// </summary>
+        /// <param name="telegramId">Телеграм-ідентифікатор студента.</param>
+        /// <returns>Силка на екземпляр класа студента.</returns>
         public static async Task<IStudent> GetStudentByTelegramId(long telegramId)
         {
             NpgsqlConnection conn = new NpgsqlConnection(Settings.ConnectionString);
@@ -39,6 +44,11 @@ namespace Bot.DataBase
             return student;
         }
 
+        /// <summary>
+        /// Добавляє в БД інформацію про нового студента.
+        /// </summary>
+        /// <param name="student">Силка на екземпляр студента.</param>
+        /// <returns></returns>
         public static async System.Threading.Tasks.Task AddStudent(IStudent student)
         {
             var conn = new NpgsqlConnection(Settings.ConnectionString);
@@ -58,6 +68,10 @@ namespace Bot.DataBase
             await conn.CloseAsync();
         }
         
+        /// <summary>
+        /// Добавляє в БД інформацію про команду.
+        /// </summary>
+        /// <param name="team">Силка на екземпляр команди.</param>
         public static async System.Threading.Tasks.Task AddTeam(ITeam team)
         {
             var conn = new NpgsqlConnection(Settings.ConnectionString);
@@ -76,6 +90,11 @@ namespace Bot.DataBase
             await conn.CloseAsync();
         }
 
+        /// <summary>
+        /// Змінює ідентифікатор головного повідомлення для студента.
+        /// </summary>
+        /// <param name="msgId">Новий ідентифікатор повідомлення.</param>
+        /// <param name="studentId">Ідентифікатор студента.</param>
         public static async System.Threading.Tasks.Task EditMainMessageId(int msgId, int studentId)
         {
             var conn = new NpgsqlConnection(Settings.ConnectionString);

@@ -33,6 +33,10 @@ namespace Bot
             Thread.Sleep(int.MaxValue);
         }
 
+        /// <summary>
+        /// Функція для безпечного видалення повідемлень при діалозі з користувачем.
+        /// </summary>
+        /// <param name="msg">Силка на екземпляр повідомлення, яке потрібно видалити.</param>
         public static async Task TryDeleteMessageAsync(Message msg)
         {
             try
@@ -47,6 +51,14 @@ namespace Bot
             }
         }
 
+        /// <summary>
+        /// Функція для безпечного редагування повідомлення при діалозі з користувачем.
+        /// </summary>
+        /// <param name="chatId">Ідентифікатор чату в якому відбувається діалог.</param>
+        /// <param name="messageId">Ідентифікатор повідомлення, яке потрібно відредагувати.</param>
+        /// <param name="message">Новий текст цього повідомлення.</param>
+        /// <param name="parseMode">Режим перетворення тексту повідомлення.</param>
+        /// <param name="replyMarkup">Силка на екземпляр клавіатури.</param>
         public static async Task TryEditMessage(ChatId chatId, int messageId, string message,
             ParseMode parseMode = ParseMode.Default, InlineKeyboardMarkup replyMarkup = null)
         {

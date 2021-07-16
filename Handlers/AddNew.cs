@@ -11,6 +11,10 @@ namespace Bot.Handlers
 {
     public class AddNew
     {
+        /// <summary>
+        /// Запускає процес реєстрації нового студента.
+        /// </summary>
+        /// <param name="ChatId">Ідентифікатор студента, який розпочав реєстрацію.</param>
         public static async System.Threading.Tasks.Task Student(long ChatId)
         {
             int step = 1;
@@ -43,6 +47,11 @@ namespace Bot.Handlers
             Program.bot.OnMessage -= add;
         }
 
+        /// <summary>
+        /// Запускає процес реєстрації нової команди.
+        /// </summary>
+        /// <param name="ChatId">Ідентифікатор студента, який розпочав реєстрацію.</param>
+        /// <param name="msgId">Ідентифікатор головного повідемлення для цього студента.</param>
         public static async System.Threading.Tasks.Task Team(long ChatId, int msgId)
         {
             int step = 1;

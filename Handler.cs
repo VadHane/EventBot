@@ -8,7 +8,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace Bot
 {
-    public class Handler
+    public abstract class Handler
     {
         public static async void OnMessage(object sender, MessageEventArgs e)
         {
