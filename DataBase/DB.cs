@@ -10,7 +10,7 @@ namespace Bot.DataBase
     public class DB
     {
 
-        public async Task<IStudent> GetStudentByTelegramId(long telegramId)
+        public static async Task<IStudent> GetStudentByTelegramId(long telegramId)
         {
             NpgsqlConnection conn = new NpgsqlConnection(Settings.ConnectionString);
             await conn.OpenAsync();
@@ -39,7 +39,7 @@ namespace Bot.DataBase
             return student;
         }
 
-        public async System.Threading.Tasks.Task AddStudent(IStudent student)
+        public static async System.Threading.Tasks.Task AddStudent(IStudent student)
         {
             var conn = new NpgsqlConnection(Settings.ConnectionString);
             await conn.OpenAsync();
@@ -58,7 +58,7 @@ namespace Bot.DataBase
             await conn.CloseAsync();
         }
         
-        public async System.Threading.Tasks.Task AddTeam(ITeam team)
+        public static async System.Threading.Tasks.Task AddTeam(ITeam team)
         {
             var conn = new NpgsqlConnection(Settings.ConnectionString);
             await conn.OpenAsync();
@@ -73,6 +73,18 @@ namespace Bot.DataBase
             Console.WriteLine($"[New Team] New team was added into data base. [Name - {team.Name}, " +
                               $"Team group - {team.Group}, Unique id - {team.UniqueId}]");
             
+            await conn.CloseAsync();
+        }
+
+        public static async System.Threading.Tasks.Task EditMainMessageId(int msgId, int studentId)
+        {
+            var conn = new NpgsqlConnection(Settings.ConnectionString);
+            await conn.OpenAsync();
+
+            string script = $"UPDATE students SET telegramid = {studentId} WHERE mainmessageid = {msgId};";
+            var command = new NpgsqlCommand(script, conn);
+            await command.ExecuteNonQueryAsync();
+
             await conn.CloseAsync();
         }
     }

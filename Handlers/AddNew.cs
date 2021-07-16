@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Bot.DataBase;
 using Bot.Interfaces;
 using Bot.Models;
 using Bot.Static;
@@ -33,7 +34,7 @@ namespace Bot.Handlers
                     Settings.Students.Add(student.TelegramId);
                     
                     // DB
-                    await Program.DB.AddStudent(student);
+                    await DB.AddStudent(student);
                 }
             };
 
@@ -63,7 +64,7 @@ namespace Bot.Handlers
                     }
                     else
                     {
-                        var student = Program.DB.GetStudentByTelegramId(ChatId).Result;
+                        var student = DB.GetStudentByTelegramId(ChatId).Result;
                         await Program.TryEditMessage(ChatId, msgId, 
                             Text.StartMessageFromAllStudents(student), ParseMode.Html, Keyboards.ImLeader());
                         step = 0;
@@ -88,7 +89,7 @@ namespace Bot.Handlers
                     step++;
                     var team = new Team(name, e.Message.Text, e.Message.From.Id);
 
-                    await Program.DB.AddTeam(team);
+                    await DB.AddTeam(team);
 
                     await Program.TryEditMessage(ChatId, msgId, Text.Team(team), ParseMode.Html,
                         Keyboards.TeamLeader());

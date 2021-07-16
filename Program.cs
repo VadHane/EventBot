@@ -15,7 +15,6 @@ namespace Bot
     {
         
         public static ITelegramBotClient bot;
-        public static DB DB = new DB();
         static void Main(string[] args)
         {
             bot = new TelegramBotClient(Settings.TOKEN);
@@ -61,7 +60,7 @@ namespace Bot
                 var msg = await bot.SendTextMessageAsync(chatId, message, parseMode, replyMarkup: replyMarkup);
                 
                 // Запит в БД на зміну id основного повідемлення для цього користувача
-
+                await DB.EditMainMessageId(msg.MessageId, msg.From.Id);
             }
         }
     }
