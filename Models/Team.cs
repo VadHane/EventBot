@@ -10,10 +10,10 @@ namespace Bot.Models
         {
             this.Name = name;
             this.Group = group;
-            UniqueId = GetUniqueId();
-
+            UniqueId = GetUniqueId(); 
+            Task = new Task() {UniqueId = 1}; // !!!!!!
             this.Leader = leader;
-            Members = new List<long>();
+            
 
             Score = 0;
             
@@ -27,7 +27,7 @@ namespace Bot.Models
         
         // Members and leader
         public long Leader { get; set; }
-        public List<long> Members { get; set; }
+        
         
         // Score
         public long Score { get; }

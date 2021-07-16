@@ -38,6 +38,10 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "dependencies": {
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[6.0.0-preview5, )"
+            },
             "Telegram.Bot": {
               "target": "Package",
               "version": "[15.7.0, )"

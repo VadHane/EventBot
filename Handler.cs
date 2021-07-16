@@ -69,7 +69,12 @@ namespace Bot
         
         public static async void OnCallback(object sender, CallbackQueryEventArgs e)
         {
-            
+            switch (e.CallbackQuery.Data)
+            {
+                case "ImLeader":
+                    await AddNew.Team(e.CallbackQuery.From.Id, e.CallbackQuery.Message.MessageId);
+                    break;
+            }
         }
         
         public static async void OnUpdate(object sender, UpdateEventArgs e)
