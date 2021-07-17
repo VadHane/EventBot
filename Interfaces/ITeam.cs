@@ -30,13 +30,13 @@ namespace Bot.Interfaces
         /// <summary>
         /// Кількість балів, що заробила ця команда
         /// </summary>
-        public long Score { get; }
+        public long Score { get; set; }
         
         // Tasks 
         
         /// <summary>
         /// Поточне завдання групи
         /// </summary>
-        public ITask Task { get; set; }
+        public int TaskId { get; set; }
     }
 }

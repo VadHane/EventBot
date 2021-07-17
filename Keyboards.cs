@@ -43,5 +43,17 @@ namespace Bot
                 }
             });
         }
+        
+        /// <summary>
+        /// Генерує клавішу для видалення повідомлення до якого вона буде прив'язана.
+        /// </summary>
+        /// <returns>Силку на екземпляр клавіши.</returns>
+        public static InlineKeyboardMarkup DeleteThisMessage()
+        {
+            return new InlineKeyboardMarkup(new []
+            {
+                InlineKeyboardButton.WithCallbackData("Зрозуміло!", "DeleteThisMessage"), 
+            });
+        }
     }
 }

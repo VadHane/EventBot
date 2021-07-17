@@ -43,6 +43,30 @@ namespace Bot.DataBase
             await conn.CloseAsync();
             return student;
         }
+        
+        /// <summary>
+        /// Перевіряє, чи існує в БД запис про студента з таким унікальним ідентифікатором.
+        /// </summary>
+        /// <param name="uniqueId">Унікальний ідентифікатор студента.</param>
+        /// <returns>Повертає true, якщо користувач з таким ідентифікатором існує в БД
+        /// та false - у зворотньому випадку</returns>
+        public static async Task<bool> GetStudentByUniqueId(long uniqueId)
+        {
+            NpgsqlConnection conn = new NpgsqlConnection(Settings.ConnectionString);
+            await conn.OpenAsync();
+            bool result = false;
+            
+            string script = $"SELECT count(*) FROM students WHERE uniqueid = {uniqueId};";
+            var command = new NpgsqlCommand(script, conn);
+            var reader = command.ExecuteReaderAsync().Result;
+            if (reader.Read())
+            {
+                result = reader.GetBoolean(0);
+            }
+
+            await conn.CloseAsync();
+            return result;
+        }
 
         /// <summary>
         /// Добавляє в БД інформацію про нового студента.
@@ -79,7 +103,7 @@ namespace Bot.DataBase
 
             string script = $"INSERT INTO teams " +
                             $"VALUES ('{team.Name}', '{team.Group}', {team.UniqueId}, {team.Leader}, {team.Score}," +
-                            $" {team.Task.UniqueId});";
+                            $" {team.TaskId});";
 
             var command = new NpgsqlCommand(script, conn);
             await command.ExecuteNonQueryAsync();
@@ -90,6 +114,53 @@ namespace Bot.DataBase
             await conn.CloseAsync();
         }
 
+        /// <summary>
+        /// Добавляє студента в команду.
+        /// </summary>
+        /// <param name="uniqueId">Унікальний ідентифікатор студента.</param>
+        /// <param name="leaderId">Унікальний ідентифікатор капітана команди.</param>
+        public static async System.Threading.Tasks.Task AddTeamToStudent(int uniqueId, ITeam team)
+        {
+            var conn = new NpgsqlConnection(Settings.ConnectionString);
+            await conn.OpenAsync();
+            
+            string script = $"UPDATE students SET teamid = {team.UniqueId} WHERE uniqueid = {uniqueId};";
+            var command = new NpgsqlCommand(script, conn);
+            await command.ExecuteNonQueryAsync();
+
+            Console.WriteLine($"[New members in team] До команди '{team.Name}' добавленого нового учасника!");
+            
+            await conn.CloseAsync();
+        }
+
+        /// <summary>
+        /// Витягує із БД інформацію про команду по унікальному ідентифікатору капітана.
+        /// </summary>
+        /// <param name="leaderId">Унікальний ідентифікатор капітана.</param>
+        /// <returns>Силку на екземпляр команди, якщо така існує в БД. В іншому ж випадку - null.</returns>
+        public static async Task<ITeam> GetTeamByLeaderId(int leaderId)
+        {
+            var conn = new NpgsqlConnection(Settings.ConnectionString);
+            await conn.OpenAsync();
+
+            ITeam team = null;
+            string script = $"SELECT * FROM teams WHERE leader = {leaderId};";
+            var command = new NpgsqlCommand(script, conn);
+            var reader = command.ExecuteReaderAsync().Result;
+            if (reader.Read())
+            {
+                team = new Team(reader.GetString(0), reader.GetString(1), leaderId)
+                {
+                    UniqueId = reader.GetInt64(2),
+                    Score = reader.GetInt64(4),
+                    TaskId = reader.GetInt32(5)
+                };
+            }
+            
+            await conn.CloseAsync();
+            return team;
+        }
+        
         /// <summary>
         /// Змінює ідентифікатор головного повідомлення для студента.
         /// </summary>
