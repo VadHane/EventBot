@@ -1,4 +1,5 @@
 using Bot.Interfaces;
+using Bot.Models;
 
 namespace Bot.Static
 {
@@ -32,5 +33,6 @@ namespace Bot.Static
                    $"Кількість балів - <em>{team.Score}</em>\n\n\n" +
                    $"Виберіть дію: </b>";
         }
+        
     }
 }

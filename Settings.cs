@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Bot.Interfaces;
 
 namespace Bot
 {
@@ -24,7 +25,8 @@ namespace Bot
         /// Список телеграм-ідентифікаторів усіх студентів для зменшення запитів до БД.
         /// </summary>
         public static List<long> Students = new List<long>();
-        
+
+        public static List<IVoting> Votings = new List<IVoting>();
         
         
         // DataBase settings

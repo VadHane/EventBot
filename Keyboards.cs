@@ -55,5 +55,25 @@ namespace Bot
                 InlineKeyboardButton.WithCallbackData("Зрозуміло!", "DeleteThisMessage"), 
             });
         }
+
+        /// <summary>
+        /// Генерує клавіатуру для опитування студентів.
+        /// </summary>
+        /// <param name="votingId">Унікальний ідентифікатор опитування.</param>
+        /// <returns>Силку на екземпляр кравіатури.</returns>
+        public static InlineKeyboardMarkup Voting(int votingId)
+        {
+            return new InlineKeyboardMarkup(new []
+            {
+                new []
+                {
+                    InlineKeyboardButton.WithCallbackData("Згідний!", $"Voting:Yes:{votingId}"), 
+                },
+                new []
+                {
+                    InlineKeyboardButton.WithCallbackData("Не згідний!", $"Voting:No:{votingId}"), 
+                }
+            });
+        }
     }
 }
