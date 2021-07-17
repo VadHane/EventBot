@@ -15,7 +15,7 @@ namespace Bot.Models
         {
             Id = GetId();
             Team = DB.GetTeamByLeaderId(leaderId).Result;
-            Students = null; // Create new method in DB
+            Students = DB.GetStudentsByTeamId(DB.GetTeamByLeaderId(leaderId).Result.UniqueId).Result;
             Messages = new List<Message>();
             CounterYes = 0;
             CounterNo = 0;

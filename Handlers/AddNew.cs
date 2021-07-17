@@ -100,6 +100,8 @@ namespace Bot.Handlers
 
                     await DB.AddTeam(team);
 
+                    await DB.AddTeamToStudent(e.Message.From.Id, team);
+                    
                     await Program.TryEditMessage(ChatId, msgId, Text.Team(team), ParseMode.Html,
                         Keyboards.TeamLeader());
                 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bot.Interfaces;
 using Bot.Models;
@@ -69,6 +70,44 @@ namespace Bot.DataBase
         }
 
         /// <summary>
+        /// Витягує з БД усіх членів цієї команди.
+        /// </summary>
+        /// <param name="teamId">Унікальний ідентифікатор команди.</param>
+        /// <returns>Список студентів, що входять в цю команду.</returns>
+        public static async Task<List<IStudent>> GetStudentsByTeamId(long teamId)
+        {
+            var conn = new NpgsqlConnection(Settings.ConnectionString);
+            await conn.OpenAsync();
+            
+            List<IStudent> students = new List<IStudent>();
+            string script = $"SELECT * FROM students WHERE teamid = {teamId};";
+            var command = new NpgsqlCommand(script, conn);
+            var reader = await command.ExecuteReaderAsync();
+
+            while (reader.Read())
+            {
+                students.Add(
+                    new Student(reader.GetString(5), 
+                        new User()
+                            {
+                                Id = reader.GetInt32(1), 
+                                Username = reader.GetString(7),
+                                FirstName = reader.GetString(6)
+                            },
+                        reader.GetInt32(4))
+                    {
+                        CanJoinToTeam = reader.GetBoolean(2),
+                        TeamId = teamId,
+                        UniqueId = reader.GetInt32(0)
+                    }
+                    );
+            }
+            
+            await conn.CloseAsync();
+            return students;
+        }
+        
+        /// <summary>
         /// Добавляє в БД інформацію про нового студента.
         /// </summary>
         /// <param name="student">Силка на екземпляр студента.</param>
@@ -118,7 +157,7 @@ namespace Bot.DataBase
         /// Добавляє студента в команду.
         /// </summary>
         /// <param name="uniqueId">Унікальний ідентифікатор студента.</param>
-        /// <param name="leaderId">Унікальний ідентифікатор капітана команди.</param>
+        /// <param name="team">Силка на екземпляр команди.</param>
         public static async System.Threading.Tasks.Task AddTeamToStudent(int uniqueId, ITeam team)
         {
             var conn = new NpgsqlConnection(Settings.ConnectionString);
