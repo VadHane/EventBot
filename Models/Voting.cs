@@ -21,10 +21,10 @@ namespace Bot.Models
             CounterNo = 0;
         }
 
-        public int Id { get; set; }
+        public int Id { get; init; }
         public ITeam Team { get; set; }
         public List<IStudent> Students { get; set; }
-        public List<Message> Messages { get; set; }
+        private List<Message> Messages { get; set; }
         
         public int CounterYes { get; set; }
         public int CounterNo { get; set; }
@@ -68,9 +68,22 @@ namespace Bot.Models
             }
             
             Thread.Sleep(60 * 60 * 100); // sleep 1 min
-
-            Settings.Votings.RemoveAll(voting => voting.Id == this.Id);
+            
             await DeleteAllMessage();
+            Settings.Votings.RemoveAll(voting => voting.Id == this.Id);
+
+            if (CounterYes > CounterNo)
+            {
+                await Program.bot.SendTextMessageAsync(this.Team.Leader, "Команда прийняла вашу пропозицію!",
+                    replyMarkup: Keyboards.DeleteThisMessage());
+                
+                
+            }
+            else
+            {
+                await Program.bot.SendTextMessageAsync(this.Team.Leader, "Команда не прийняла вашу пропозицію!",
+                    replyMarkup: Keyboards.DeleteThisMessage());
+            }
             
             return CounterNo < CounterYes;
         }

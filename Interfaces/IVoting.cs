@@ -4,7 +4,7 @@ namespace Bot.Interfaces
 {
     public interface IVoting
     {
-        public int Id { get; set; }
+        public int Id { get; init; }
         public ITeam Team { get; set; }
         public List<IStudent> Students { get; set; }
 

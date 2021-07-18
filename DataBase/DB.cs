@@ -106,6 +106,23 @@ namespace Bot.DataBase
             await conn.CloseAsync();
             return students;
         }
+
+        /// <summary>
+        /// Видаляє студента із команди.
+        /// </summary>
+        /// <param name="studentId">Унікальний ідентифікатор студента.</param>
+        /// <returns></returns>
+        public static async System.Threading.Tasks.Task DeleteStudentFromTeam(long studentId)
+        {
+            var conn = new NpgsqlConnection(Settings.ConnectionString);
+            await conn.OpenAsync();
+
+            string script = $"UPDATE students SET teamid = -1, canjointoteam = false WHERE telegramid = {studentId};";
+            var command = new NpgsqlCommand(script, conn);
+            await command.ExecuteNonQueryAsync();
+
+            await conn.CloseAsync();
+        }
         
         /// <summary>
         /// Добавляє в БД інформацію про нового студента.

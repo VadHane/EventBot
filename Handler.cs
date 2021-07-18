@@ -79,6 +79,13 @@ namespace Bot
                 case "Team":
                     await CommandsOfLeader.ParseCommands(commands, e.CallbackQuery.Message);
                     break;
+                case "DeleteThisMessage":
+                    await Program.TryDeleteMessageAsync(e.CallbackQuery.Message);
+                    break;
+                case "Voting":
+                    await CommandsOfVoting.ParseCommands(commands);
+                    await Program.TryDeleteMessageAsync(e.CallbackQuery.Message);
+                    break;
             }
         }
         
