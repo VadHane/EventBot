@@ -76,8 +76,10 @@ namespace Bot.Models
             {
                 await Program.bot.SendTextMessageAsync(this.Team.Leader, "Команда прийняла вашу пропозицію!",
                     replyMarkup: Keyboards.DeleteThisMessage());
-                
-                
+
+                await DB.DeleteStudentFromTeam(deleteStudent.TelegramId);
+                await Program.TryEditMessage(deleteStudent.TelegramId, deleteStudent.MainMessageId,
+                    "Для вас гру <b>завершено!</b>", ParseMode.Html);
             }
             else
             {
