@@ -26,6 +26,8 @@ namespace Bot.Handlers
             
             EventHandler<MessageEventArgs> add = async (sender, e) =>
             {
+                if (ChatId != e.Message.Chat.Id) return;
+                
                 if (step == 1)
                 {
                     step++;
@@ -60,6 +62,8 @@ namespace Bot.Handlers
 
             EventHandler<MessageEventArgs> add = async (object sender, MessageEventArgs e) =>
             {
+                if (ChatId != e.Message.Chat.Id) return;
+                
                 if (step == 1)
                 {
                     step++;
@@ -100,7 +104,7 @@ namespace Bot.Handlers
 
                     await DB.AddTeam(team);
 
-                    await DB.AddTeamToStudent(e.Message.From.Id, team);
+                    await DB.AddTeamToStudent(e.Message.Chat.Id, team);
                     
                     await Program.TryEditMessage(ChatId, msgId, Text.Team(team), ParseMode.Html,
                         Keyboards.TeamLeader());

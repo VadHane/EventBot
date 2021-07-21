@@ -1,11 +1,13 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using Bot.DataBase;
+using Bot.Interfaces;
+using Bot.Models;
 using Bot.Static;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Task = System.Threading.Tasks.Task;
 
 namespace Bot.Handlers
 {
@@ -21,10 +23,23 @@ namespace Bot.Handlers
             switch (commands[1])
             {
                 case "AddMember":
-                    await AddMember(msg.From.Id, msg.MessageId);
+                    await AddMember(msg.Chat.Id, msg.MessageId);
+                    break;
+                case "StartDeleteMember":
+                    await Program.TryEditMessage(msg.Chat.Id, msg.MessageId,
+                        "Виберіть студента, якого хочете <b>видалити</b>:", ParseMode.Html, 
+                        Keyboards.TeamMembers(
+                            DB.GetStudentsByTeamId(DB.GetTeamByLeaderId(msg.Chat.Id).Result.UniqueId).Result
+                            ));
                     break;
                 case "DeleteMember":
-                    await DeleteMember(msg.From.Id, msg.MessageId);
+                    IVoting voting = new Voting(msg.Chat.Id);
+                    await voting.StartVote(int.Parse(commands[2]));
+                    break;
+                case "ToMainMenu":
+                    await Program.TryEditMessage(msg.Chat.Id, msg.MessageId,
+                        Text.Team(DB.GetTeamByLeaderId(msg.Chat.Id).Result),
+                        ParseMode.Html, Keyboards.TeamLeader());
                     break;
             }
         }
@@ -34,7 +49,7 @@ namespace Bot.Handlers
         /// </summary>
         /// <param name="LeaderId">Унікальний ідентифікатор капітана команди.</param>
         /// <param name="msgId">Унікальний ідентифікатор головного повідомлення капітана команди.</param>
-        private static async Task AddMember(int LeaderId, int msgId)
+        private static async Task AddMember(long LeaderId, int msgId)
         {
             int step = 1;
             var wait = new ManualResetEvent(false);
@@ -42,23 +57,41 @@ namespace Bot.Handlers
             await Program.TryEditMessage(LeaderId, msgId, "<b>Введіть унікальний ідентифікатор студента</b>",
                 ParseMode.Html);
 
-            EventHandler<MessageEventArgs> add = async (object sender, MessageEventArgs e) =>
+            EventHandler<MessageEventArgs> func = async (object sender, MessageEventArgs e) =>
             {
+                if (LeaderId != e.Message.Chat.Id) return;
+                
                 if (step == 1)
                 {
                     step++;
                     
-                    var team = await DB.GetTeamByLeaderId(LeaderId);
+                    var team = await DB.GetTeamByLeaderId((int)LeaderId);
                     
                     if (int.TryParse(e.Message.Text, out _))
                     {
-                        if (DB.GetStudentByUniqueId(int.Parse(e.Message.Text)).Result)
+                        var student = await DB.GetStudentByUniqueId(int.Parse(e.Message.Text));
+                        
+                        if (student != null)
                         {
-                            await DB.AddTeamToStudent(int.Parse(e.Message.Text), team);
-                            await Program.bot.SendTextMessageAsync(e.Message.From.Id,
-                                "<b>Ви успішно добавили нового учасника команди " +
-                                $"з унікальним ідентифікатором <em>{e.Message.Text}</em></b>", ParseMode.Html,
-                                replyMarkup: Keyboards.DeleteThisMessage());
+                            if (student.TeamId == -1)
+                            {
+                                await DB.AddTeamToStudent(int.Parse(e.Message.Text), team);
+                                await Program.bot.SendTextMessageAsync(e.Message.From.Id,
+                                    $"<b>Ви успішно добавили нового учасника команди - {student.Name}" +
+                                    $"з унікальним ідентифікатором <em>{e.Message.Text}</em></b>", ParseMode.Html,
+                                    replyMarkup: Keyboards.DeleteThisMessage());
+                                await Program.TryEditMessage(student.TelegramId, student.MainMessageId, Text.Team(team),
+                                    ParseMode.Html);
+                                await Program.bot.SendTextMessageAsync(student.TelegramId,
+                                    $"Ви були добавлені в команду {team.Name}!",
+                                    replyMarkup: Keyboards.DeleteThisMessage());
+                            }
+                            else
+                            {
+                                await Program.bot.SendTextMessageAsync(e.Message.From.Id,
+                                    $"Цей студент <em>уже знаходиться в команді!</em></b>", ParseMode.Html,
+                                    replyMarkup: Keyboards.DeleteThisMessage());
+                            }
                         }
                         else
                         {
@@ -81,19 +114,9 @@ namespace Bot.Handlers
                 }
             };
             
-            Program.bot.OnMessage += add;
+            Program.bot.OnMessage += func;
             wait.WaitOne();
-            Program.bot.OnMessage -= add;
-        }
-        
-        /// <summary>
-        /// Видаляє гравця з команди та забороняє йому приєднуватись до будь-якої іншої команди.
-        /// </summary>
-        /// <param name="LeaderId">Унікальний ідентифікатор капітана команди.</param>
-        /// <param name="msgId">Унікальний ідентифікатор головного повідомлення капітана команди.</param>
-        private static async Task DeleteMember(int LeaderId, int msgId)
-        {
-            
+            Program.bot.OnMessage -= func;
         }
     }
 }

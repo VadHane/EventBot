@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Bot.Interfaces
 {
@@ -10,5 +11,8 @@ namespace Bot.Interfaces
 
         public int CounterYes { get; set; }
         public int CounterNo { get; set; }
+
+
+        public Task<bool> StartVote(int studentUniqueId);
     }
 }

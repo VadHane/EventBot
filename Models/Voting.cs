@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,11 +12,11 @@ namespace Bot.Models
 {
     public class Voting : IVoting
     {
-        public Voting(int leaderId)
+        public Voting(long leaderId)
         {
             Id = GetId();
             Team = DB.GetTeamByLeaderId(leaderId).Result;
-            Students = DB.GetStudentsByTeamId(DB.GetTeamByLeaderId(leaderId).Result.UniqueId).Result;
+            Students = DB.GetStudentsByTeamId(Team.UniqueId).Result;
             Messages = new List<Message>();
             CounterYes = 0;
             CounterNo = 0;
@@ -67,7 +68,8 @@ namespace Bot.Models
                 }
             }
             
-            Thread.Sleep(60 * 60 * 100); // sleep 1 min
+            
+            Thread.Sleep( 30 * 1000); // sleep 1 min
             
             await DeleteAllMessage();
             Settings.Votings.RemoveAll(voting => voting.Id == this.Id);

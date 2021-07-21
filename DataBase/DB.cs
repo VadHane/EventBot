@@ -51,18 +51,28 @@ namespace Bot.DataBase
         /// <param name="uniqueId">Унікальний ідентифікатор студента.</param>
         /// <returns>Повертає true, якщо користувач з таким ідентифікатором існує в БД
         /// та false - у зворотньому випадку</returns>
-        public static async Task<bool> GetStudentByUniqueId(long uniqueId)
+        public static async Task<IStudent> GetStudentByUniqueId(long uniqueId)
         {
             NpgsqlConnection conn = new NpgsqlConnection(Settings.ConnectionString);
             await conn.OpenAsync();
-            bool result = false;
+            IStudent result = null;
             
-            string script = $"SELECT count(*) FROM students WHERE uniqueid = {uniqueId};";
+            string script = $"SELECT * FROM students WHERE uniqueid = {uniqueId};";
             var command = new NpgsqlCommand(script, conn);
             var reader = command.ExecuteReaderAsync().Result;
             if (reader.Read())
             {
-                result = reader.GetBoolean(0);
+                result = new Student(reader.GetString(5), new User()
+                {
+                    FirstName = reader.GetString(6),
+                    Username = reader.GetString(7),
+                    Id = reader.GetInt32(1),
+                }, reader.GetInt32(4))
+                {
+                    UniqueId = reader.GetInt32(0),
+                    CanJoinToTeam = reader.GetBoolean(2),
+                    TeamId = reader.GetInt32(3)
+                };
             }
 
             await conn.CloseAsync();
@@ -175,7 +185,7 @@ namespace Bot.DataBase
         /// </summary>
         /// <param name="uniqueId">Унікальний ідентифікатор студента.</param>
         /// <param name="team">Силка на екземпляр команди.</param>
-        public static async System.Threading.Tasks.Task AddTeamToStudent(int uniqueId, ITeam team)
+        public static async System.Threading.Tasks.Task AddTeamToStudent(long uniqueId, ITeam team)
         {
             var conn = new NpgsqlConnection(Settings.ConnectionString);
             await conn.OpenAsync();
@@ -194,7 +204,7 @@ namespace Bot.DataBase
         /// </summary>
         /// <param name="leaderId">Унікальний ідентифікатор капітана.</param>
         /// <returns>Силку на екземпляр команди, якщо така існує в БД. В іншому ж випадку - null.</returns>
-        public static async Task<ITeam> GetTeamByLeaderId(int leaderId)
+        public static async Task<ITeam> GetTeamByLeaderId(long leaderId)
         {
             var conn = new NpgsqlConnection(Settings.ConnectionString);
             await conn.OpenAsync();

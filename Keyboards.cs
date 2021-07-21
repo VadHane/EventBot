@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Bot.Interfaces;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Bot
@@ -39,7 +41,8 @@ namespace Bot
                 },
                 new []
                 {
-                    InlineKeyboardButton.WithCallbackData("Видалити учасника команди", "Team:DeleteMember"), 
+                    InlineKeyboardButton.WithCallbackData("Видалити учасника команди", 
+                        "Team:StartDeleteMember"), 
                 }
             });
         }
@@ -74,6 +77,27 @@ namespace Bot
                     InlineKeyboardButton.WithCallbackData("Не згідний!", $"Voting:No:{votingId}"), 
                 }
             });
+        }
+
+        public static InlineKeyboardMarkup TeamMembers(List<IStudent> students)
+        {
+            List<InlineKeyboardButton[]> buttons = new List<InlineKeyboardButton[]>();
+
+            foreach (var student in students)
+            {
+                buttons.Add(new []
+                {
+                    InlineKeyboardButton.WithCallbackData($"{student.TelegramName}  - {student.Name}", 
+                        $"Team:DeleteMember:{student.UniqueId}"),
+                });
+            }
+            
+            buttons.Add(new []
+            {
+                InlineKeyboardButton.WithCallbackData("Назад", "Team:ToMainMenu"), 
+            });
+            
+            return new InlineKeyboardMarkup(buttons);
         }
     }
 }
