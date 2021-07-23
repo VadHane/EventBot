@@ -35,6 +35,11 @@ namespace Bot.Handlers
                 case "DeleteMember":
                     IVoting voting = new Voting(msg.Chat.Id);
                     await voting.StartVote(int.Parse(commands[2]));
+                    await Program.TryEditMessage(msg.Chat.Id, msg.MessageId, "Голосування запущено!");
+                    Thread.Sleep(30 * 1000);
+                    await Program.TryEditMessage(msg.Chat.Id, msg.MessageId,
+                        Text.Team(DB.GetTeamByLeaderId(msg.Chat.Id).Result), ParseMode.Html, 
+                        Keyboards.TeamLeader());
                     break;
                 case "ToMainMenu":
                     await Program.TryEditMessage(msg.Chat.Id, msg.MessageId,
@@ -67,13 +72,29 @@ namespace Bot.Handlers
                     
                     var team = await DB.GetTeamByLeaderId((int)LeaderId);
                     
+                    await Program.TryEditMessage(LeaderId, msgId, Text.Team(team), ParseMode.Html, 
+                        Keyboards.TeamLeader());
+                    
+                    
                     if (int.TryParse(e.Message.Text, out _))
                     {
                         var student = await DB.GetStudentByUniqueId(int.Parse(e.Message.Text));
                         
                         if (student != null)
                         {
-                            if (student.TeamId == -1)
+                            if (!student.CanJoinToTeam)
+                            {
+                                await Program.bot.SendTextMessageAsync(e.Message.From.Id,
+                                    $"Цей студент <em>не може приєднуднатись до команди!</em></b>", ParseMode.Html,
+                                    replyMarkup: Keyboards.DeleteThisMessage());
+                            } 
+                            else if (student.TeamId != -1)
+                            {
+                                await Program.bot.SendTextMessageAsync(e.Message.From.Id,
+                                    $"Цей студент <em>уже знаходиться в команді!</em></b>", ParseMode.Html,
+                                    replyMarkup: Keyboards.DeleteThisMessage());
+                            }
+                            else
                             {
                                 await DB.AddTeamToStudent(int.Parse(e.Message.Text), team);
                                 await Program.bot.SendTextMessageAsync(e.Message.From.Id,
@@ -86,12 +107,7 @@ namespace Bot.Handlers
                                     $"Ви були добавлені в команду {team.Name}!",
                                     replyMarkup: Keyboards.DeleteThisMessage());
                             }
-                            else
-                            {
-                                await Program.bot.SendTextMessageAsync(e.Message.From.Id,
-                                    $"Цей студент <em>уже знаходиться в команді!</em></b>", ParseMode.Html,
-                                    replyMarkup: Keyboards.DeleteThisMessage());
-                            }
+                            
                         }
                         else
                         {
@@ -107,10 +123,6 @@ namespace Bot.Handlers
                             "<b>Я не зміг знайти студента з таким унікальним ідентифікатором!</b>", ParseMode.Html,
                             replyMarkup: Keyboards.DeleteThisMessage());
                     }
-
-                    await Program.TryEditMessage(LeaderId, msgId, Text.Team(team), ParseMode.Html, 
-                        Keyboards.TeamLeader());
-
                 }
             };
             

@@ -24,6 +24,8 @@ namespace Bot.Handlers
                 "<b>Привіт!</b> \nДавай ми тебе зареєструємо, щоб ти зміг розпочати гру! \n" +
                 "Надішли, будь ласка, <b><em>як я можу до тебе звертатись</em></b>.", ParseMode.Html);
             
+            Settings.Students.Add(ChatId);
+            
             EventHandler<MessageEventArgs> add = async (sender, e) =>
             {
                 if (ChatId != e.Message.Chat.Id) return;
@@ -37,7 +39,7 @@ namespace Bot.Handlers
                     await Program.TryEditMessage(ChatId, student.MainMessageId, 
                         Text.StartMessageFromAllStudents(student), ParseMode.Html, replyMarkup: Keyboards.ImLeader());
                     
-                    Settings.Students.Add(student.TelegramId);
+                    
                     
                     // DB
                     await DB.AddStudent(student);
@@ -104,7 +106,7 @@ namespace Bot.Handlers
 
                     await DB.AddTeam(team);
 
-                    await DB.AddTeamToStudent(e.Message.Chat.Id, team);
+                    await DB.AddTeamToStudent(DB.GetStudentByTelegramId(e.Message.Chat.Id).Result.UniqueId, team);
                     
                     await Program.TryEditMessage(ChatId, msgId, Text.Team(team), ParseMode.Html,
                         Keyboards.TeamLeader());
